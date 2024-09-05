@@ -10,7 +10,7 @@ public class Program
         TreeNode root = tree.Insert();
 
         // Prints tree in order
-        tree.Inorder(root);
+        tree.Inorder(root); 
 
         Console.WriteLine();
         tree.PrintPreOrder(root);
@@ -19,8 +19,7 @@ public class Program
         tree.PrintTree(root);
 
         Console.WriteLine();
-        List<TreeNode> nodes = TreeNode.JsonToArray();
-        Console.WriteLine(nodes[0].Defenses[0]);
+        tree.AttackDefenceInAction();
     }
 
 

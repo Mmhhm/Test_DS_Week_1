@@ -8,32 +8,6 @@ using Newtonsoft.Json;
 
 namespace CyberAttackDefence
 {
-    public class TreeNode
-    {
-        public TreeNode Left { get; set; }
-        public TreeNode Right { get; set; }
-        public int MinSeverity { get; set; }
-        public int MaxSeverity { get; set; }
-        public List<string> Defenses { get; set; }
-        public TreeNode(int minSev, int maxSev, List<string> defenses)
-        {
-            Left = Right = null;
-            MinSeverity = minSev;
-            MaxSeverity = maxSev;
-            Defenses = defenses;
-        }
-
-        public static List<TreeNode> JsonToArray()
-        {
-            string jsonPath = "C:\\Users\\mkf\\Desktop\\defenceStrategiesBalanced.json";
-            using StreamReader reader = new(jsonPath);
-            var json = reader.ReadToEnd();
-            List<TreeNode> nodeList = JsonConvert.DeserializeObject<List<TreeNode>>(json);
-            return nodeList;
-        }
-    }
-
-
     public class DefenceStrategiesBST
     {
         public TreeNode root;
@@ -43,9 +17,11 @@ namespace CyberAttackDefence
         }
 
 
+        // Insert the defences into a BST
         public TreeNode Insert()
         {
-            List<TreeNode> nodeList = TreeNode.JsonToArray();
+            string defenceJsonPath = "C:\\Users\\mkf\\Desktop\\defenceStrategiesBalanced.json";
+            List<TreeNode> nodeList = TreeNode.JsonToList(defenceJsonPath);
 
             foreach (TreeNode node in nodeList)
             {
@@ -56,7 +32,8 @@ namespace CyberAttackDefence
 
         private TreeNode RecursionIns(TreeNode currNode, TreeNode newNode)
         {
-            if (root == null) { root = newNode;  return newNode; }
+            if (root == null) { root = newNode; return newNode; }
+            
             if (currNode.MinSeverity >= newNode.MinSeverity)
             {
                 if (currNode.Left == null)
@@ -78,21 +55,80 @@ namespace CyberAttackDefence
             return newNode;
         }
 
-
-        // Print the tree in order
-        public void Inorder(TreeNode root)
+        
+        // Start the attacks and defences
+        public void AttackDefenceInAction()
         {
-            if (root != null)
+            string weakAttack = "Attack severity is below the threshold. Attack is ignored.";
+            string DefNotFound = "No suitble defence was found. Brace for impact!";
+
+            string threatJsonPath = "C:\\Users\\mkf\\Desktop\\threats.json";
+            List<Threat> threatList = Threat.JsonToList(threatJsonPath);
+
+            foreach (Threat threat in threatList)
             {
-                Inorder(root.Left);
-                Console.Write(root.MinSeverity + " " + root.MaxSeverity + " ");
-                Inorder(root.Right);
+                int threatSeverity = Threat.CalcThreatSeverity(threat);
+
+                if (threatSeverity < GetMinDefence(root)) { Console.WriteLine(weakAttack + "\n"); Thread.Sleep(2000); continue; } // Break from loop if attack is weak
+
+                TreeNode defence = Search(threatSeverity);  // Search the defence for the threat
+
+                if (defence == null) { Console.WriteLine(DefNotFound + "\n"); Thread.Sleep(2000); continue; }
+                Console.WriteLine($"-{defence.Defenses[0]}\n-{defence.Defenses[1]}\n");
+
+                Thread.Sleep(2000);
             }
+
         }
 
 
+        // Search the defence for the threat
+        public TreeNode Search(int value)
+        {
+            return RecSearch(root, value);
+        }
 
-        // PreOrder print
+        public TreeNode RecSearch(TreeNode node, int value)
+        {
+            if (node == null) { return null; }
+
+            int maxSev = node.MaxSeverity;
+            int minSev = node.MinSeverity;
+
+            if (value >= minSev && value <= maxSev)
+            {
+                return node;
+            }
+            else if (value < minSev)
+            {
+                return RecSearch(node.Left, value);
+            }
+            else if (value > maxSev)
+            {
+                return RecSearch(node.Right, value);
+            }
+            return node;
+        }
+
+
+        // Get the leftist node in the defence tree
+        public int? GetMinDefence()
+        {
+            return GetMinDefence(root);
+        }
+
+        private int? GetMinDefence(TreeNode node)
+        {
+            if (node == null) return null;
+            while (node.Left != null)
+            {
+                node = node.Left;
+            }
+            return node.MinSeverity;
+        }
+
+
+        // Print the tree PreOrder in a row (testing)
         public void PrintPreOrder(TreeNode node)
         {
             if (node == null) { return; }
@@ -104,20 +140,18 @@ namespace CyberAttackDefence
         }
 
 
-
-
         // Prints PreOrder tree
         public void PrintTree(TreeNode node)
         {
             PrintTreeRec(node, "", true);
         }
 
-        private void PrintTreeRec(TreeNode node, string space, bool last)
+        private void PrintTreeRec(TreeNode node, string space, bool rightLast)
         {
             if (node != null)
             {
                 Console.Write(space);
-                if (last)
+                if (rightLast)
                 {
                     Console.Write("----Right ");
                     space += "   ";
@@ -131,6 +165,18 @@ namespace CyberAttackDefence
 
                 PrintTreeRec(node.Left, space, false);
                 PrintTreeRec(node.Right, space, true);
+            }
+        }
+
+
+        // Print the tree in order (for testing)
+        public void Inorder(TreeNode root)
+        {
+            if (root != null)
+            {
+                Inorder(root.Left);
+                Console.Write(root.MinSeverity + " " + root.MaxSeverity + " ");
+                Inorder(root.Right);
             }
         }
     }
