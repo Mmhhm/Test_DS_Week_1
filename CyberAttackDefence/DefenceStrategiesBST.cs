@@ -20,7 +20,7 @@ namespace CyberAttackDefence
         // Insert the defences into a BST
         public TreeNode Insert()
         {
-            string defenceJsonPath = "C:\\Users\\mkf\\Desktop\\defenceStrategiesBalanced.json";
+            string defenceJsonPath = "C:\\Users\\mkf\\Desktop\\IDF DATA Course\\Tests\\CyberAttackDefence\\defenceStrategiesBalanced.json";
             List<TreeNode> nodeList = TreeNode.JsonToList(defenceJsonPath);
 
             foreach (TreeNode node in nodeList)
@@ -62,7 +62,7 @@ namespace CyberAttackDefence
             string weakAttack = "Attack severity is below the threshold. Attack is ignored.";
             string DefNotFound = "No suitble defence was found. Brace for impact!";
 
-            string threatJsonPath = "C:\\Users\\mkf\\Desktop\\threats.json";
+            string threatJsonPath = "C:\\Users\\mkf\\Desktop\\IDF DATA Course\\Tests\\CyberAttackDefence\\threats.json";
             List<Threat> threatList = Threat.JsonToList(threatJsonPath);
 
             foreach (Threat threat in threatList)
